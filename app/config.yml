@@ -1,0 +1,139 @@
+interval: 60
+dockerParameters:
+  list:
+    all: true
+  inspect:
+    size: false
+metricSets:
+  - requires:
+      stats: false
+      prevVariables: false
+    variables:
+      inspect_timestamp: new Date().toISOString()
+      name:              inspect.Name.substring(1)
+      state:             inspect.State.Status
+      health:            'inspect.State.Health ? inspect.State.Health.Status : null'
+      running:           "variables.state == 'running' ? 100 : 0"
+      not_running:       100 - variables.running
+      healthy:           "variables.state == 'running' && (variables.health == 'healthy' || variables.health == null) ? 100 : 0"
+      not_healthy:       100 - variables.healthy
+    metricDefaults:
+      Namespace: "'Docker'"
+      Timestamp: variables.inspect_timestamp
+      Dimensions:
+      - Name: "'Label'"
+        Value: "env.HOSTNAME"
+      - Name: "'ContainerName'"
+        Value: variables.name
+    metrics:
+    - Name: "'Running'"
+      Value: variables.running
+      Unit: "'Percent'"
+    - Name: "'NotRunning'"
+      Value: variables.not_running
+      Unit: "'Percent'"
+    - Name: "'Healthy'"
+      Value: variables.healthy
+      Unit: "'Percent'"
+    - Name: "'NotHealthy'"
+      Value: variables.not_healthy
+      Unit: "'Percent'"
+  - requires:
+      stats: true
+      prevVariables: false
+    variables:
+      stats_timestamp: stats.read
+      mem_usage:       stats.memory_stats.usage - stats.memory_stats.stats.cache
+      mem_percent:     variables.mem_usage / stats.memory_stats.limit * 100
+      cpu_total:       stats.cpu_stats.cpu_usage.total_usage
+      cpu_system:      stats.cpu_stats.system_cpu_usage
+      io_total:        stats.blkio_stats.io_service_bytes_recursive.filter(x => x.op == 'Total').reduce((accumulator, x) => accumulator + x.value, 0)
+      io_read:         stats.blkio_stats.io_service_bytes_recursive.filter(x => x.op == 'Read').reduce((accumulator, x) => accumulator + x.value, 0)
+      io_write:        stats.blkio_stats.io_service_bytes_recursive.filter(x => x.op == 'Write').reduce((accumulator, x) => accumulator + x.value, 0)
+      net_rx:          Object.keys(stats.networks).reduce((accumulator, key) => accumulator + stats.networks[key].rx_bytes, 0)
+      net_tx:          Object.keys(stats.networks).reduce((accumulator, key) => accumulator + stats.networks[key].tx_bytes, 0)
+      net_total:       variables.net_rx + variables.net_tx
+      milliseconds:    new Date(variables.stats_timestamp).valueOf()
+    metricDefaults:
+      Namespace: "'Docker'"
+      Timestamp: variables.stats_timestamp
+      Dimensions:
+      - Name: "'Label'"
+        Value: "env.HOSTNAME"
+      - Name: "'ContainerName'"
+        Value: variables.name
+    metrics:
+    - Name: "'MemoryUsed'"
+      Value: variables.mem_usage
+      Unit: "'Bytes'"
+    - Name: "'MemoryUtilization'"
+      Value: variables.mem_percent
+      Unit: "'Percent'"
+  - requires:
+      stats: true
+      prevVariables: true
+    variables:
+      cpu_total_delta:    variables.cpu_total    - prevVariables.cpu_total
+      cpu_system_delta:   variables.cpu_system   - prevVariables.cpu_system
+      io_total_delta:     variables.io_total     - prevVariables.io_total
+      io_read_delta:      variables.io_read      - prevVariables.io_read
+      io_write_delta:     variables.io_write     - prevVariables.io_write
+      net_rx_delta:       variables.net_rx       - prevVariables.net_rx
+      net_tx_delta:       variables.net_tx       - prevVariables.net_tx
+      net_total_delta:    variables.net_total    - prevVariables.net_total
+      milliseconds_delta: variables.milliseconds - prevVariables.milliseconds
+      cpu_percent:        variables.cpu_total_delta / variables.cpu_system_delta   * 100
+      io_total_rate:      variables.io_total_delta  / variables.milliseconds_delta * 1000
+      io_read_rate:       variables.io_read_delta   / variables.milliseconds_delta * 1000
+      io_write_rate:      variables.io_write_delta  / variables.milliseconds_delta * 1000
+      net_rx_rate:        variables.net_rx_delta    / variables.milliseconds_delta * 1000
+      net_tx_rate:        variables.net_tx_delta    / variables.milliseconds_delta * 1000
+      net_total_rate:     variables.net_total_delta / variables.milliseconds_delta * 1000
+    metricDefaults:
+      Namespace: "'Docker'"
+      Timestamp: variables.stats_timestamp
+      Dimensions:
+      - Name: "'Label'"
+        Value: "env.HOSTNAME"
+      - Name: "'ContainerName'"
+        Value: variables.name
+    metrics:
+    - Name: "'DiskTotalBytes'"
+      Value: variables.io_total_delta
+      Unit: "'Bytes'"
+    - Name: "'DiskReadBytes'"
+      Value: variables.io_read_delta
+      Unit: "'Bytes'"
+    - Name: "'DiskWriteBytes'"
+      Value: variables.io_write_delta
+      Unit: "'Bytes'"
+    - Name: "'NetworkOutBytes'"
+      Value: variables.net_tx_delta
+      Unit: "'Bytes'"
+    - Name: "'NetworkInBytes'"
+      Value: variables.net_rx_delta
+      Unit: "'Bytes'"
+    - Name: "'NetworkTotalBytes'"
+      Value: variables.net_total_delta
+      Unit: "'Bytes'"
+    - Name: "'CPUUtilization'"
+      Value: variables.cpu_percent
+      Unit: "'Percent'"
+    - Name: "'DiskTotalRate'"
+      Value: variables.io_total_rate
+      Unit: "'Bytes/Second'"
+    - Name: "'DiskReadRate'"
+      Value: variables.io_read_rate
+      Unit: "'Bytes/Second'"
+    - Name: "'DiskWriteRate'"
+      Value: variables.io_write_rate
+      Unit: "'Bytes/Second'"
+    - Name: "'NetworkOutRate'"
+      Value: variables.net_tx_rate
+      Unit: "'Bytes/Second'"
+    - Name: "'NetworkInRate'"
+      Value: variables.net_rx_rate
+      Unit: "'Bytes/Second'"
+    - Name: "'NetworkTotalRate'"
+      Value: variables.net_total_rate
+      Unit: "'Bytes/Second'"
