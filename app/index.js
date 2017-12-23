@@ -120,7 +120,7 @@ async function getMetricsForContainer(containerInfo, oldVariables) {
         };
         evaluateAllVariables(context);
         const metrics = evaluateAllMetrics(context);
-        console.log(`sending ${metrics.length}\tmetrics for ${context.name}`)
+        console.log(`sending ${metrics.length} metrics for ${context.name}`)
         await sendMetrics(metrics);
         return [containerInfo.Id, variables];
     } catch (err) {
