@@ -13,11 +13,21 @@ const docker = new Docker();
 const configVm = new VM({
     sandbox: {
         env: process.env,
+        metadata: {}
     }
 });
 main();
 
 async function main() {
+    const metadata = await getMetadata();
+    _.assign(configVm.options.sandbox.metadata, metadata);
+    console.log(configVm.options.sandbox.metadata);
+
+    if (!AWS.config.region) {
+        const region = metadata.dynamic['instance-identity'].document.region
+        AWS.config.update({ region: region });
+    }
+
     let variables = {};
     while (true) {
         const start = Date.now();
@@ -29,6 +39,22 @@ async function main() {
         const interval = vmEval(configVm, config.interval, 'interval') || 0 * 1000;
         await waitUntil(start + interval);
     }
+}
+
+function getMetadata() {
+    const instance = require("ec2-instance-data");
+    instance.roots = ['/latest/meta-data/', '/latest/dynamic/', '/latest/user-data'];
+    return new Promise(resolve => {
+        instance.init(err => {
+            if (err) {
+                console.error("Error fetching EC2 metadata");
+                console.error(err);
+                resolve({});
+            } else {
+                resolve(instance.latest);
+            };
+        });
+    });
 }
 
 async function waitUntil(time) {
