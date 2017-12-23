@@ -9,7 +9,6 @@ const file = process.argv[2];
 console.log(`Opening config file ${file}`)
 const config = deepCompile(yaml.safeLoad(fs.readFileSync(file, 'utf8')));
 
-const cloudwatch = new AWS.CloudWatch();
 const docker = new Docker();
 const metadata = {};
 const configVm = new VM({
@@ -39,10 +38,10 @@ async function main() {
 async function applyMetadata() {
     _.assign(metadata, await getMetadata());
 
-    if (!cloudwatch.config.region && metadata.dynamic) {
+    if (!AWS.config.region && metadata.dynamic) {
         const region = metadata.dynamic['instance-identity'].document.region
         console.log(`aws-sdk region is not set - using region ${region} from metadata endpoint`);
-        cloudwatch.config.update({ region: region });
+        AWS.config.update({ region: region });
     }
 }
 
@@ -189,6 +188,7 @@ function vmEval(vm, value, path) {
 }
 
 async function sendMetrics(metrics) {
+    const cloudwatch = new AWS.CloudWatch();
     return Promise.all(_(metrics).groupBy('Namespace')
                                  .mapValues(metrics => metrics.map(metric => _.omit(metric, 'Namespace')))
                                  .map((metrics, namespace) => cloudwatch.putMetricData({ Namespace: namespace, MetricData: metrics }).promise())
