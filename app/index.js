@@ -23,8 +23,9 @@ async function main() {
     _.assign(metadata, await getMetadata());
     console.log(metadata);
 
-    if (!AWS.config.region) {
+    if (!AWS.config.region && metadata.dynamic) {
         const region = metadata.dynamic['instance-identity'].document.region
+        console.log(`aws-sdk region is not set - using region ${region} from metadata endpoint`);
         AWS.config.update({ region: region });
     }
 
