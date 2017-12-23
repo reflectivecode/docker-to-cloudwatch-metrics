@@ -13,12 +13,6 @@ const cloudwatch = new AWS.CloudWatch();
 const docker = new Docker();
 main();
 
-const putMetricData = (options) => {
-    //options.MetricData.forEach(metric => console.log(`${metric.Name}\t${metric.Value}\t${metric.Unit}`));
-    //console.log(Buffer.from(JSON.stringify(options, null, 2), 'utf8').length + " bytes");
-    return { promise: () => Promise.resolve() }
-};
-
 async function main() {
     let variables = {};
     while (true) {
@@ -155,6 +149,6 @@ function vmEval(context, value, path) {
 async function sendMetrics(metrics) {
     return Promise.all(_(metrics).groupBy('Namespace')
                                  .mapValues(metrics => metrics.map(metric => _.omit(metric, 'Namespace')))
-                                 .map((metrics, namespace) => putMetricData({ Namespace: namespace, MetricData: metrics }).promise())
+                                 .map((metrics, namespace) => cloudwatch.putMetricData({ Namespace: namespace, MetricData: metrics }).promise())
                                  .value());
 }
