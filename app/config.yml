@@ -21,8 +21,8 @@ metricSets:
       Namespace: "'Docker'"
       Timestamp: variables.inspect_timestamp
       Dimensions:
-      - Name:  "'Label'"
-        Value: "env.HOSTNAME"
+      - Name:  "'InstanceId'"
+        Value: "metadata.['meta-data'].instance-id"
       - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
@@ -58,8 +58,8 @@ metricSets:
       Namespace: "'Docker'"
       Timestamp: variables.stats_timestamp
       Dimensions:
-      - Name:  "'Label'"
-        Value: "env.HOSTNAME"
+      - Name:  "'InstanceId'"
+        Value: "metadata.['meta-data'].instance-id"
       - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
@@ -93,8 +93,8 @@ metricSets:
       Namespace: "'Docker'"
       Timestamp: variables.stats_timestamp
       Dimensions:
-      - Name:  "'Label'"
-        Value: "env.HOSTNAME"
+      - Name:  "'InstanceId'"
+        Value: "metadata.['meta-data'].instance-id"
       - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
