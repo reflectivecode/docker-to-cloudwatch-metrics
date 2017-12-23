@@ -21,23 +21,23 @@ metricSets:
       Namespace: "'Docker'"
       Timestamp: variables.inspect_timestamp
       Dimensions:
-      - Name: "'Label'"
+      - Name:  "'Label'"
         Value: "env.HOSTNAME"
-      - Name: "'ContainerName'"
+      - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
-    - Name: "'Running'"
-      Value: variables.running
-      Unit: "'Percent'"
-    - Name: "'NotRunning'"
-      Value: variables.not_running
-      Unit: "'Percent'"
-    - Name: "'Healthy'"
-      Value: variables.healthy
-      Unit: "'Percent'"
-    - Name: "'NotHealthy'"
-      Value: variables.not_healthy
-      Unit: "'Percent'"
+    - MetricName: "'Running'"
+      Value:      variables.running
+      Unit:       "'Percent'"
+    - MetricName: "'NotRunning'"
+      Value:      variables.not_running
+      Unit:       "'Percent'"
+    - MetricName: "'Healthy'"
+      Value:      variables.healthy
+      Unit:       "'Percent'"
+    - MetricName: "'NotHealthy'"
+      Value:      variables.not_healthy
+      Unit:       "'Percent'"
   - requires:
       stats: true
       prevVariables: false
@@ -58,17 +58,17 @@ metricSets:
       Namespace: "'Docker'"
       Timestamp: variables.stats_timestamp
       Dimensions:
-      - Name: "'Label'"
+      - Name:  "'Label'"
         Value: "env.HOSTNAME"
-      - Name: "'ContainerName'"
+      - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
-    - Name: "'MemoryUsed'"
-      Value: variables.mem_usage
-      Unit: "'Bytes'"
-    - Name: "'MemoryUtilization'"
-      Value: variables.mem_percent
-      Unit: "'Percent'"
+    - MetricName: "'MemoryUsed'"
+      Value:      variables.mem_usage
+      Unit:       "'Bytes'"
+    - MetricName: "'MemoryUtilization'"
+      Value:      variables.mem_percent
+      Unit:       "'Percent'"
   - requires:
       stats: true
       prevVariables: true
@@ -93,47 +93,47 @@ metricSets:
       Namespace: "'Docker'"
       Timestamp: variables.stats_timestamp
       Dimensions:
-      - Name: "'Label'"
+      - Name:  "'Label'"
         Value: "env.HOSTNAME"
-      - Name: "'ContainerName'"
+      - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
-    - Name: "'DiskTotalBytes'"
-      Value: variables.io_total_delta
-      Unit: "'Bytes'"
-    - Name: "'DiskReadBytes'"
-      Value: variables.io_read_delta
-      Unit: "'Bytes'"
-    - Name: "'DiskWriteBytes'"
-      Value: variables.io_write_delta
-      Unit: "'Bytes'"
-    - Name: "'NetworkOutBytes'"
-      Value: variables.net_tx_delta
-      Unit: "'Bytes'"
-    - Name: "'NetworkInBytes'"
-      Value: variables.net_rx_delta
-      Unit: "'Bytes'"
-    - Name: "'NetworkTotalBytes'"
-      Value: variables.net_total_delta
-      Unit: "'Bytes'"
-    - Name: "'CPUUtilization'"
-      Value: variables.cpu_percent
-      Unit: "'Percent'"
-    - Name: "'DiskTotalRate'"
-      Value: variables.io_total_rate
-      Unit: "'Bytes/Second'"
-    - Name: "'DiskReadRate'"
-      Value: variables.io_read_rate
-      Unit: "'Bytes/Second'"
-    - Name: "'DiskWriteRate'"
-      Value: variables.io_write_rate
-      Unit: "'Bytes/Second'"
-    - Name: "'NetworkOutRate'"
-      Value: variables.net_tx_rate
-      Unit: "'Bytes/Second'"
-    - Name: "'NetworkInRate'"
-      Value: variables.net_rx_rate
-      Unit: "'Bytes/Second'"
-    - Name: "'NetworkTotalRate'"
-      Value: variables.net_total_rate
-      Unit: "'Bytes/Second'"
+    - MetricName: "'DiskTotalBytes'"
+      Value:      variables.io_total_delta
+      Unit:       "'Bytes'"
+    - MetricName: "'DiskReadBytes'"
+      Value:      variables.io_read_delta
+      Unit:       "'Bytes'"
+    - MetricName: "'DiskWriteBytes'"
+      Value:      variables.io_write_delta
+      Unit:       "'Bytes'"
+    - MetricName: "'NetworkOutBytes'"
+      Value:      variables.net_tx_delta
+      Unit:       "'Bytes'"
+    - MetricName: "'NetworkInBytes'"
+      Value:      variables.net_rx_delta
+      Unit:       "'Bytes'"
+    - MetricName: "'NetworkTotalBytes'"
+      Value:      variables.net_total_delta
+      Unit:       "'Bytes'"
+    - MetricName: "'CPUUtilization'"
+      Value:      variables.cpu_percent
+      Unit:       "'Percent'"
+    - MetricName: "'DiskTotalRate'"
+      Value:      variables.io_total_rate
+      Unit:       "'Bytes/Second'"
+    - MetricName: "'DiskReadRate'"
+      Value:      variables.io_read_rate
+      Unit:       "'Bytes/Second'"
+    - MetricName: "'DiskWriteRate'"
+      Value:      variables.io_write_rate
+      Unit:       "'Bytes/Second'"
+    - MetricName: "'NetworkOutRate'"
+      Value:      variables.net_tx_rate
+      Unit:       "'Bytes/Second'"
+    - MetricName: "'NetworkInRate'"
+      Value:      variables.net_rx_rate
+      Unit:       "'Bytes/Second'"
+    - MetricName: "'NetworkTotalRate'"
+      Value:      variables.net_total_rate
+      Unit:       "'Bytes/Second'"
