@@ -43,7 +43,6 @@ async function main() {
 
 function getMetadata() {
     const instance = require("ec2-instance-data");
-    instance.roots = ['/latest/meta-data/', '/latest/dynamic/', '/latest/user-data'];
     return new Promise(resolve => {
         instance.init(err => {
             if (err) {
