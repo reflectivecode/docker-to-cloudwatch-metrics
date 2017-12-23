@@ -8,6 +8,7 @@ const { VM, VMScript } = require('vm2');
 const file = process.argv[2];
 console.log(`Opening config file ${file}`)
 const config = deepCompile(yaml.safeLoad(fs.readFileSync(file, 'utf8')));
+
 const cloudwatch = new AWS.CloudWatch();
 const docker = new Docker();
 const metadata = {};
@@ -17,18 +18,11 @@ const configVm = new VM({
         metadata: metadata
     }
 });
+
 main();
 
 async function main() {
-    _.assign(metadata, await getMetadata());
-    console.log(metadata);
-
-    if (!AWS.config.region && metadata.dynamic) {
-        const region = metadata.dynamic['instance-identity'].document.region
-        console.log(`aws-sdk region is not set - using region ${region} from metadata endpoint`);
-        AWS.config.update({ region: region });
-    }
-
+    await applyMetadata();
     let variables = {};
     while (true) {
         const start = Date.now();
@@ -39,6 +33,16 @@ async function main() {
         }
         const interval = vmEval(configVm, config.interval, 'interval') || 0 * 1000;
         await waitUntil(start + interval);
+    }
+}
+
+async function applyMetadata() {
+    _.assign(metadata, await getMetadata());
+
+    if (!cloudwatch.config.region && metadata.dynamic) {
+        const region = metadata.dynamic['instance-identity'].document.region
+        console.log(`aws-sdk region is not set - using region ${region} from metadata endpoint`);
+        cloudwatch.config.update({ region: region });
     }
 }
 
