@@ -182,7 +182,6 @@ function vmEval(vm, value, path) {
         throw new Error(`Unexpected value. Only string, boolean, number, null, undefined, array, plain object, and VMScript supported.`);
     } catch (err) {
         console.error(`Error evaluating ${path} with value ${JSON.stringify(value, (k, v) => v instanceof VMScript ? v.code : v)}`);
-        console.log("context:", JSON.stringify(vm.options.sandbox, null, 2));
         throw err;
     }
 }
