@@ -22,7 +22,7 @@ metricSets:
       Timestamp: variables.inspect_timestamp
       Dimensions:
       - Name:  "'InstanceId'"
-        Value: "metadata.['meta-data'].instance-id"
+        Value: "metadata['meta-data']['instance-id']"
       - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
@@ -59,7 +59,7 @@ metricSets:
       Timestamp: variables.stats_timestamp
       Dimensions:
       - Name:  "'InstanceId'"
-        Value: "metadata.['meta-data'].instance-id"
+        Value: "metadata['meta-data']['instance-id']"
       - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
@@ -94,7 +94,7 @@ metricSets:
       Timestamp: variables.stats_timestamp
       Dimensions:
       - Name:  "'InstanceId'"
-        Value: "metadata.['meta-data'].instance-id"
+        Value: "metadata['meta-data']['instance-id']"
       - Name:  "'ContainerName'"
         Value: variables.name
     metrics:
