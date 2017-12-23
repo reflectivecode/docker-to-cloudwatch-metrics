@@ -10,18 +10,18 @@ console.log(`Opening config file ${file}`)
 const config = deepCompile(yaml.safeLoad(fs.readFileSync(file, 'utf8')));
 const cloudwatch = new AWS.CloudWatch();
 const docker = new Docker();
+const metadata = {};
 const configVm = new VM({
     sandbox: {
         env: process.env,
-        metadata: {}
+        metadata: metadata
     }
 });
 main();
 
 async function main() {
-    const metadata = await getMetadata();
-    _.assign(configVm.options.sandbox.metadata, metadata);
-    console.log(configVm.options.sandbox.metadata);
+    _.assign(metadata, await getMetadata());
+    console.log(metadata);
 
     if (!AWS.config.region) {
         const region = metadata.dynamic['instance-identity'].document.region
@@ -96,6 +96,7 @@ async function getMetricsForContainer(containerInfo, oldVariables) {
         const prevVariables = oldVariables[containerInfo.Id];
         const sandbox = {
             env: process.env,
+            metadata: metadata,
             variables: variables,
             prevVariables: prevVariables,
             inspect: inspect,
