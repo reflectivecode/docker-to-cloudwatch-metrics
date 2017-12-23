@@ -30,7 +30,7 @@ async function main() {
         } catch (err) {
             console.error(err);
         }
-        const interval = vmEval(configVm, config.interval, 'interval') || 0 * 1000;
+        const interval = (vmEval(configVm, config.interval, 'interval') || 0) * 1000;
         await waitUntil(start + interval);
     }
 }
