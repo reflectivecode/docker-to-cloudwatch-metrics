@@ -17,6 +17,7 @@ metricSets:
       not_running:       100 - variables.running
       healthy:           "variables.state == 'running' && (variables.health == 'healthy' || variables.health == null) ? 100 : 0"
       not_healthy:       100 - variables.healthy
+      restart_count:     inspect.RestartCount
     metricDefaults:
       Namespace: "'Docker'"
       Timestamp: variables.inspect_timestamp
@@ -69,6 +70,21 @@ metricSets:
     - MetricName: "'MemoryUtilization'"
       Value:      variables.mem_percent
       Unit:       "'Percent'"
+  - requires:
+      stats: false
+      prevVariables: true
+    metricDefaults:
+      Namespace: "'Docker'"
+      Timestamp: variables.stats_timestamp
+      Dimensions:
+      - Name:  "env.LABEL ? 'Label' : 'InstanceId'"
+        Value: "env.LABEL || metadata['meta-data']['instance-id']"
+      - Name:  "'ContainerName'"
+        Value: variables.name
+    metrics:
+    - MetricName: "'Restarts'"
+      Value:      variables.restart_count - prevVariables.restart_count
+      Unit:       "'Count'"
   - requires:
       stats: true
       prevVariables: true
