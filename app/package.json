@@ -1,19 +1,22 @@
 {
-    "name": "docker-to-cloudwatch-metrics",
-    "version": "0.1.0",
-    "description": "Send docker metrics to CloudWatch",
-    "main": "index.js",
-    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Greg Todd",
-    "license": "MIT",
-    "dependencies": {
-      "aws-sdk": "^2.176.0",
-      "dockerode": "^2.5.3",
-      "js-yaml": "^3.10.0",
-      "lodash": "^4.17.4",
-      "vm2": "^3.5.2"
-    }
+  "name": "docker-to-cloudwatch-metrics",
+  "version": "0.1.0",
+  "description": "Send docker metrics to CloudWatch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/reflectivecode/docker-to-cloudwatch-metrics.git"
+  },
+  "author": "Greg Todd",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.176.0",
+    "dockerode": "^2.5.3",
+    "js-yaml": "^3.10.0",
+    "lodash": "^4.17.4",
+    "vm2": "^3.5.2"
   }
-  
+}
