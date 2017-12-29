@@ -26,7 +26,7 @@ async function main() {
 
     if (!AWS.config.region && metadata.dynamic) {
         const region = metadata.dynamic['instance-identity'].document.region
-        console.log(`aws-sdk region is not set - using region ${region} from metadata endpoint`);
+        console.log(`aws-sdk region is not set. Using region '${region}' from metadata endpoint`);
         AWS.config.update({ region: region });
     }
 
@@ -121,7 +121,7 @@ async function getMetricsForContainer(containerInfo, oldVariables) {
         await sendMetrics(metrics);
         return [containerInfo.Id, variables];
     } catch (err) {
-        console.error(`Error getting info for container ${containerInfo.Names[0].substring(1)} ${containerInfo.Id}`);
+        console.error(`Error collecting/sending metrics for container ${containerInfo.Names[0].substring(1)} ${containerInfo.Id}`);
         console.error(err);
     }
 }
