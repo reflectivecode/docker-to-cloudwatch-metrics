@@ -1,4 +1,5 @@
 interval: env.INTERVAL || 60
+metadata: "'http://169.254.169.254/latest/'"
 dockerParameters:
   list:
     all: true

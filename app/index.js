@@ -4,6 +4,7 @@ const Docker = require('dockerode');
 const _ = require('lodash');
 const AWS = require('aws-sdk');
 const { VM, VMScript } = require('vm2');
+const Metadata = require('./metadata');
 
 const file = process.argv[2];
 console.log(`Opening config file ${file}`)
@@ -21,7 +22,14 @@ const configVm = new VM({
 main();
 
 async function main() {
-    await applyMetadata();
+    _.assign(metadata, await getMetadata());
+
+    if (!AWS.config.region && metadata.dynamic) {
+        const region = metadata.dynamic['instance-identity'].document.region
+        console.log(`aws-sdk region is not set - using region ${region} from metadata endpoint`);
+        AWS.config.update({ region: region });
+    }
+
     let variables = {};
     while (true) {
         const start = Date.now();
@@ -35,29 +43,17 @@ async function main() {
     }
 }
 
-async function applyMetadata() {
-    _.assign(metadata, await getMetadata());
+async function getMetadata() {
+    const path = vmEval(configVm, config.metadata, 'metadata');
+    if (!path) { return {}; }
 
-    if (!AWS.config.region && metadata.dynamic) {
-        const region = metadata.dynamic['instance-identity'].document.region
-        console.log(`aws-sdk region is not set - using region ${region} from metadata endpoint`);
-        AWS.config.update({ region: region });
+    try {
+        return await Metadata.query({ path: path });
+    } catch (err) {
+        console.error("Error fetching EC2 metadata");
+        console.error(err);
+        return {};
     }
-}
-
-function getMetadata() {
-    const instance = require("ec2-instance-data");
-    return new Promise(resolve => {
-        instance.init(err => {
-            if (err) {
-                console.error("Error fetching EC2 metadata");
-                console.error(err);
-                resolve({});
-            } else {
-                resolve(instance.latest);
-            };
-        });
-    });
 }
 
 async function waitUntil(time) {
@@ -79,6 +75,7 @@ function deepCompile(value) {
 }
 
 async function monitorAllContainers(oldVariables) {
+    _.assign(metadata, await getMetadata());
     const listParamerters = vmEval(configVm, config.dockerParameters.list, 'dockerParameters.list');
     const containers = await docker.listContainers(listParamerters);
     console.log(`Found ${containers.length} containers: ${JSON.stringify(containers.map(x => x.Names[0].substring(1)))}`);
